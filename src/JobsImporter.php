@@ -17,6 +17,10 @@ class JobsImporter
     private function importJobsFromRegionJob(string $file): int {
         $xml = simplexml_load_file($file);
 
+        if ($xml === null) {
+            throw new Exception('Error reading the XML file.');
+        }
+
         $count = 0;
         foreach ($xml->item as $item) {
             $this->db->exec('INSERT INTO job (reference, title, description, url, company_name, publication) VALUES ('
@@ -33,8 +37,6 @@ class JobsImporter
     }
     
     private function importJobsFromJobTeaser(string $file) : int {
-        
-        $this->db->exec('DELETE FROM job');
         
         $jsonContent = file_get_contents($file);
         $data = json_decode($jsonContent, true);
